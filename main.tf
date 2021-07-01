@@ -14,18 +14,18 @@ locals {
       for elem in values(var.public_subnets) :
       elem["az"]
     ],
-    [
-      for elem in values(var.redshift_subnets) :
-      elem["az"]
-    ],
-    [
-      for elem in values(var.database_subnets) :
-      elem["az"]
-    ],
-    [
-      for elem in values(var.elasticache_subnets) :
-      elem["az"]
-    ],
+    # [
+    #   for elem in values(var.redshift_subnets) :
+    #   elem["az"]
+    # ],
+    # [
+    #   for elem in values(var.database_subnets) :
+    #   elem["az"]
+    # ],
+    # [
+    #   for elem in values(var.elasticache_subnets) :
+    #   elem["az"]
+    # ],
   ]))
   nat_gateway_count = var.single_nat_gateway ? 1 : var.one_nat_gateway_per_az ? length(local.azs) : local.max_subnet_length
 
@@ -419,7 +419,7 @@ resource "aws_subnet" "public" {
 ################################################################################
 
 resource "aws_subnet" "private" {
-  for_each                        = var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : {}
+  for_each                        = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : {}
   vpc_id                          = local.vpc_id
   cidr_block                      = each.value["cidr"]
   availability_zone               = length(regexall("^[a-z]{2}-", each.value["az"])) > 0 ? each.value["az"] : null
@@ -1151,12 +1151,12 @@ resource "aws_route" "private_ipv6_egress" {
 ################################################################################
 
 resource "aws_route_table_association" "private" {
-  count = var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : 0
+  for_each  = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : {}
 
-  subnet_id = element(aws_subnet.private.*.id, count.index)
+  subnet_id = aws_subnet.private[each.key].id
   route_table_id = element(
     aws_route_table.private.*.id,
-    var.single_nat_gateway ? 0 : count.index,
+    var.single_nat_gateway ? 0 : index(keys(var.private_subnets), each.key),
   )
 }
 
@@ -1221,9 +1221,9 @@ resource "aws_route_table_association" "intra" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = var.create_vpc && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
+  for_each       = var.create_vpc && length(var.public_subnets) > 0 ? var.public_subnets : {}
 
-  subnet_id      = element(aws_subnet.public.*.id, count.index)
+  subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public[0].id
 }
 

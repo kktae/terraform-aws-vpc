@@ -70,42 +70,42 @@ output "vpc_owner_id" {
 
 output "private_subnets" {
   description = "List of IDs of private subnets"
-  value       = aws_subnet.private.*.id
+  value       = [for u in aws_subnet.private : u.id]
 }
 
 output "private_subnet_arns" {
   description = "List of ARNs of private subnets"
-  value       = aws_subnet.private.*.arn
+  value       = [for u in aws_subnet.private : u.arn]
 }
 
 output "private_subnets_cidr_blocks" {
   description = "List of cidr_blocks of private subnets"
-  value       = aws_subnet.private.*.cidr_block
+  value       = [for u in aws_subnet.private : u.cidr_block]
 }
 
 output "private_subnets_ipv6_cidr_blocks" {
   description = "List of IPv6 cidr_blocks of private subnets in an IPv6 enabled VPC"
-  value       = aws_subnet.private.*.ipv6_cidr_block
+  value       = [for u in aws_subnet.private : u.ipv6_cidr_block]
 }
 
 output "public_subnets" {
   description = "List of IDs of public subnets"
-  value       = aws_subnet.public.*.id
+  value       = [for u in aws_subnet.public : u.id]
 }
 
 output "public_subnet_arns" {
   description = "List of ARNs of public subnets"
-  value       = aws_subnet.public.*.arn
+  value       = [for u in aws_subnet.public : u.arn]
 }
 
 output "public_subnets_cidr_blocks" {
   description = "List of cidr_blocks of public subnets"
-  value       = aws_subnet.public.*.cidr_block
+  value       = [for u in aws_subnet.public : u.cidr_block]
 }
 
 output "public_subnets_ipv6_cidr_blocks" {
   description = "List of IPv6 cidr_blocks of public subnets in an IPv6 enabled VPC"
-  value       = aws_subnet.public.*.ipv6_cidr_block
+  value       = [for u in aws_subnet.public : u.ipv6_cidr_block]
 }
 
 output "outpost_subnets" {
@@ -300,7 +300,7 @@ output "private_ipv6_egress_route_ids" {
 
 output "private_route_table_association_ids" {
   description = "List of IDs of the private route table association"
-  value       = aws_route_table_association.private.*.id
+  value       = [for u in aws_route_table_association.private : u.id]
 }
 
 output "database_route_table_association_ids" {
@@ -330,7 +330,7 @@ output "intra_route_table_association_ids" {
 
 output "public_route_table_association_ids" {
   description = "List of IDs of the public route table association"
-  value       = aws_route_table_association.public.*.id
+  value       = [for u in aws_route_table_association.public : u.id]
 }
 
 output "nat_ids" {
