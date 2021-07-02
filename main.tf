@@ -391,7 +391,7 @@ resource "aws_route_table" "intra" {
 ################################################################################
 
 resource "aws_subnet" "public" {
-  for_each = var.create_vpc && length(var.public_subnets) > 0 && (false == var.one_nat_gateway_per_az || length(var.public_subnets) >= length(local.azs)) ? var.public_subnets : {}
+  for_each = var.create_vpc && length(var.public_subnets) > 0 && (false == var.one_nat_gateway_per_az || length(var.public_subnets) >= length(local.azs)) ? var.public_subnets : tomap()
 
   vpc_id                          = local.vpc_id
   cidr_block                      = each.value["cidr"]
@@ -419,7 +419,7 @@ resource "aws_subnet" "public" {
 ################################################################################
 
 resource "aws_subnet" "private" {
-  for_each                        = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : {}
+  for_each                        = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : tomap()
   vpc_id                          = local.vpc_id
   cidr_block                      = each.value["cidr"]
   availability_zone               = length(regexall("^[a-z]{2}-", each.value["az"])) > 0 ? each.value["az"] : null
@@ -1151,7 +1151,7 @@ resource "aws_route" "private_ipv6_egress" {
 ################################################################################
 
 resource "aws_route_table_association" "private" {
-  for_each  = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : {}
+  for_each  = var.create_vpc && length(var.private_subnets) > 0 ? var.private_subnets : tomap()
 
   subnet_id = aws_subnet.private[each.key].id
   route_table_id = element(
@@ -1221,7 +1221,7 @@ resource "aws_route_table_association" "intra" {
 }
 
 resource "aws_route_table_association" "public" {
-  for_each       = var.create_vpc && length(var.public_subnets) > 0 ? var.public_subnets : {}
+  for_each       = var.create_vpc && length(var.public_subnets) > 0 ? var.public_subnets : tomap()
 
   subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public[0].id

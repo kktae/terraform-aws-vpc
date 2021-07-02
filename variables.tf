@@ -168,13 +168,13 @@ variable "elasticache_subnet_suffix" {
 
 variable "public_subnets" {
   description = "A list of public subnets inside the VPC"
-  type = map(map(string))
+  type = any
   default = {}
 }
 
 variable "private_subnets" {
   description = "A list of private subnets inside the VPC"
-  type = map(map(string))
+  type = any
   default = {}
 }
 
