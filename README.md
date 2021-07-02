@@ -1,3 +1,5 @@
+# Change Subnet type (list -> any) cur : v3.2.0
+
 # AWS VPC Terraform module
 
 Terraform module which creates VPC resources on AWS.
